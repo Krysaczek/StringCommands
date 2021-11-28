@@ -50,20 +50,20 @@ namespace StringCommands
 
             if (command.Contains(ADDDAY))
             {
-                this.AdjustDateTime(ADDDAY,ref currentDateTime);
+                this.AdjustDateTime(command, ADDDAY, ref currentDateTime);
             }
 
             if (command.Contains(ADDHOUR))
             {
-                this.AdjustDateTime(ADDDAY, ref currentDateTime);
+                this.AdjustDateTime(command, ADDHOUR, ref currentDateTime);
             }
 
             return currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
-        private void AdjustDateTime(string flag, ref DateTime datetime)
+        private void AdjustDateTime(string command, string flag, ref DateTime datetime)
         {
-            var flagStart = flag.Substring(flag.IndexOf(flag)).Replace(flag, string.Empty);
+            var flagStart = command.Substring(command.IndexOf(flag)).Replace(flag, string.Empty);
             var numberString = flagStart.Substring(0, flagStart.IndexOf(DELIMITER));
             if (int.TryParse(numberString, out int number))
             {
