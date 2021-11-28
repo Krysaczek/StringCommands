@@ -13,12 +13,12 @@ namespace StringCommands
         private const string CURRENTDATETIME = "CURRENTDATETIME";
         private const string ADDHOUR = "ADDHOUR";
         private const string ADDDAY = "ADDDAY";
-        private const string DELIMITER = "@@";
+        private const string DELIMITER = ";";
 
-        private readonly string C1 = $"{DELIMITER}CURRENTDATE{DELIMITER}";
-        private readonly string C2 = $"{DELIMITER}CURRENTDATE{DELIMITER}{DELIMITER}{ADDDAY}-5{DELIMITER}";
-        private readonly string C3 = $"{DELIMITER}CURRENTDATE{DELIMITER}{DELIMITER}{ADDHOUR}5{DELIMITER}";
-        private readonly string C4 = $"{DELIMITER}CURRENTDATE{DELIMITER}{DELIMITER}{ADDHOUR}-12{DELIMITER}{DELIMITER}{ADDDAY}7{DELIMITER}";
+        private readonly string C1 = $"{CURRENTDATETIME}{DELIMITER}";
+        private readonly string C2 = $"{CURRENTDATETIME}{DELIMITER}{ADDDAY}-5{DELIMITER}";
+        private readonly string C3 = $"{CURRENTDATETIME}{DELIMITER}{ADDHOUR}5{DELIMITER}";
+        private readonly string C4 = $"{CURRENTDATETIME}{DELIMITER}{ADDHOUR}-12{DELIMITER}{ADDDAY}7{DELIMITER}";
         public void Run()
         {
             var reportParams = new Dictionary<string, string>();
@@ -45,37 +45,55 @@ namespace StringCommands
             {
                 return command;
             }
+            else
+            {
+                command = command.Replace(C1, string.Empty);
+            }
 
             var currentDateTime = DateTime.Now;
 
             if (command.Contains(ADDDAY))
             {
-                this.AdjustDateTime(command, ADDDAY, ref currentDateTime);
+                this.AdjustDateTime(ref command, ref currentDateTime);
             }
 
             if (command.Contains(ADDHOUR))
             {
-                this.AdjustDateTime(command, ADDHOUR, ref currentDateTime);
+                this.AdjustDateTime(ref command, ref currentDateTime);
             }
 
             return currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
-        private void AdjustDateTime(string command, string flag, ref DateTime datetime)
+        private void AdjustDateTime(ref string command, ref DateTime datetime)
         {
+            int number;
+            Func<double, DateTime> adder = default;
+            var flag = string.Empty;
+
+            if (command.Contains(ADDDAY))
+            {
+                flag = ADDDAY;
+                adder = datetime.AddDays;
+            }
+            else if (command.Contains(ADDHOUR))
+            {
+                flag = ADDHOUR;
+                adder = datetime.AddHours;
+            }
+            else
+            {
+                flag = string.Empty;
+            }
+
             var flagStart = command.Substring(command.IndexOf(flag)).Replace(flag, string.Empty);
             var numberString = flagStart.Substring(0, flagStart.IndexOf(DELIMITER));
-            if (int.TryParse(numberString, out int number))
+            if (int.TryParse(numberString, out number) && !string.IsNullOrEmpty(flag))
             {
-                if (flag == ADDDAY)
-                {
-                    datetime = datetime.AddDays(number);
-                }
-                else if (true)
-                {
-                    datetime = datetime.AddHours(number);
-                }
+                datetime = adder(number);
             }
+
+            command = command.Replace($"{flag}{numberString}{DELIMITER}", string.Empty);
         }
     }
 }
