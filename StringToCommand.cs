@@ -91,10 +91,7 @@ namespace StringCommands
             }
 
             command = command.Replace($"{flag}{numberString}{DELIMITER}", string.Empty);
-            if (!string.IsNullOrEmpty(command))
-            {
-                this.AdjustDateTime(ref command, ref datetime);
-            }
+            this.AdjustDateTime(ref command, ref datetime);
         }
     }
 }
