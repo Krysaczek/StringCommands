@@ -52,21 +52,18 @@ namespace StringCommands
 
             var currentDateTime = DateTime.Now;
 
-            if (command.Contains(ADDDAY))
-            {
-                this.AdjustDateTime(ref command, ref currentDateTime);
-            }
-
-            if (command.Contains(ADDHOUR))
-            {
-                this.AdjustDateTime(ref command, ref currentDateTime);
-            }
+            this.AdjustDateTime(ref command, ref currentDateTime);
 
             return currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
         private void AdjustDateTime(ref string command, ref DateTime datetime)
         {
+            if (string.IsNullOrEmpty(command))
+            {
+                return;
+            }
+
             int number;
             Func<double, DateTime> adder = default;
             var flag = string.Empty;
@@ -94,6 +91,10 @@ namespace StringCommands
             }
 
             command = command.Replace($"{flag}{numberString}{DELIMITER}", string.Empty);
+            if (!string.IsNullOrEmpty(command))
+            {
+                this.AdjustDateTime(ref command, ref datetime);
+            }
         }
     }
 }
