@@ -50,25 +50,32 @@ namespace StringCommands
 
             if (command.Contains(ADDDAY))
             {
-                var start = command.Substring(command.IndexOf(ADDDAY)).Replace(ADDDAY, string.Empty);
-                var numberString = start.Substring(0, start.IndexOf(DELIMITER));
-                if (int.TryParse(numberString, out int addDayNumber))
-                {
-                    currentDateTime = currentDateTime.AddDays(addDayNumber);
-                }
+                this.AdjustDateTime(ADDDAY,ref currentDateTime);
             }
 
             if (command.Contains(ADDHOUR))
             {
-                var start = command.Substring(command.IndexOf(ADDHOUR)).Replace(ADDHOUR, string.Empty);
-                var numberString = start.Substring(0, start.IndexOf(DELIMITER));
-                if (int.TryParse(numberString, out int addHourNumber))
-                {
-                    currentDateTime = currentDateTime.AddHours(addHourNumber);
-                }
+                this.AdjustDateTime(ADDDAY, ref currentDateTime);
             }
 
             return currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
+        }
+
+        private void AdjustDateTime(string flag, ref DateTime datetime)
+        {
+            var flagStart = flag.Substring(flag.IndexOf(flag)).Replace(flag, string.Empty);
+            var numberString = flagStart.Substring(0, flagStart.IndexOf(DELIMITER));
+            if (int.TryParse(numberString, out int number))
+            {
+                if (flag == ADDDAY)
+                {
+                    datetime = datetime.AddDays(number);
+                }
+                else if (true)
+                {
+                    datetime = datetime.AddHours(number);
+                }
+            }
         }
     }
 }
