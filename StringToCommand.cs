@@ -45,53 +45,41 @@ namespace StringCommands
             {
                 return command;
             }
-            else
-            {
-                command = command.Replace(C1, string.Empty);
-            }
 
-            var currentDateTime = DateTime.Now;
-
-            this.AdjustDateTime(ref command, ref currentDateTime);
+            DateTime currentDateTime = this.AdjustDateTime(command);
 
             return currentDateTime.ToString("yyyy-MM-dd HH:mm:ss");
         }
 
-        private void AdjustDateTime(ref string command, ref DateTime datetime)
+        private DateTime AdjustDateTime(string command)
         {
-            if (string.IsNullOrEmpty(command))
-            {
-                return;
-            }
-
-            int number;
-            Func<double, DateTime> adder = default;
-            var flag = string.Empty;
+            int days = 0;
+            int hours = 0;
+            DateTime datetime = DateTime.Now;
 
             if (command.Contains(ADDDAY))
             {
-                flag = ADDDAY;
-                adder = datetime.AddDays;
-            }
-            else if (command.Contains(ADDHOUR))
-            {
-                flag = ADDHOUR;
-                adder = datetime.AddHours;
-            }
-            else
-            {
-                flag = string.Empty;
+                days = this.ParseNumber(command, ADDDAY);
             }
 
+            if (command.Contains(ADDHOUR))
+            {
+                hours = this.ParseNumber(command, ADDHOUR);
+            }
+
+            return datetime.Add(new TimeSpan(days, hours, 0, 0));
+        }
+
+        private int ParseNumber(string command ,string flag)
+        {
             var flagStart = command.Substring(command.IndexOf(flag)).Replace(flag, string.Empty);
             var numberString = flagStart.Substring(0, flagStart.IndexOf(DELIMITER));
-            if (int.TryParse(numberString, out number) && !string.IsNullOrEmpty(flag))
+            if (int.TryParse(numberString, out int number) && !string.IsNullOrEmpty(flag))
             {
-                datetime = adder(number);
+                return number;
             }
 
-            command = command.Replace($"{flag}{numberString}{DELIMITER}", string.Empty);
-            this.AdjustDateTime(ref command, ref datetime);
+            return 0;
         }
     }
 }
